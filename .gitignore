@@ -1,7 +1,11 @@
 env/
+.venv/
+.venv_64/
 __pycache__/
 *.py[cod]
 *$py.class
 .env
-.venv
 .vscode/
+secrets/*.env
+.streamlit/secrets.toml
+.pytest_cache/
