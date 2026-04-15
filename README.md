@@ -80,3 +80,13 @@ The application extracts the `slug` (linkText) from the provided URL and queries
 ```
 GET https://{account}.vtexcommercestable.com.br/api/catalog_system/pub/products/search?fq=productLink:{slug}
 ```
+
+## 🛡️ Security Features
+
+This application implements several security best practices intended for enterprise deployment:
+
+- **Pinned Dependencies**: All dependencies in `requirements.txt` are securely pinned to exact versions, mitigating upstream supply-chain risks.
+- **Strict Domain Validation**: URLs are strictly validated to belong exclusively to `bemol.com.br` or its subdomains, preventing SRF or unintended external calls.
+- **Secret Masking**: Extends Python's `logging.Filter` to proactively intercept and mask `VTEX_APP_KEY` and `VTEX_APP_TOKEN` in application logs, protecting credentials in case of crashes.
+- **Rate Limit Resilience**: Integrates programmatic rate limit backoffs (`HTTPAdapter` + `Retry`) out-of-the-box. Gracefully responds to HTTP `429 Too Many Requests` API throttles.
+- **Automated Auditing Ready**: Follows static analysis standards evaluated via `bandit` to continuously secure syntax and API connections.
