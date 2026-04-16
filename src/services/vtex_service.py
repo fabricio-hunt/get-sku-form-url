@@ -103,7 +103,13 @@ class VTEXService:
                 timeout=TIMEOUT_SECONDS,
             )
             response.raise_for_status()
-            return self._parse_response(response.json(), result)
+            parsed_dict = self._parse_response(response.json(), result)
+            
+            if result.sku != NOT_AVAILABLE and result.status == "✅ Success":
+                extra_details = self._fetch_sku_details(result.sku)
+                parsed_dict.update(extra_details)
+                
+            return parsed_dict
 
         except requests.exceptions.Timeout:
             logger.error("Timeout querying slug=%s", result.slug)
@@ -138,3 +144,21 @@ class VTEXService:
         result.sku = items[0].get("itemId", NOT_AVAILABLE)
         result.status = "✅ Success"
         return result.__dict__
+
+    def _fetch_sku_details(self, sku_id: str) -> dict:
+        """Fetches complementary SKU information to enrich the dataset."""
+        try:
+            logger.info("Querying VTEX SKU details — sku: %s", sku_id)
+            url = f"https://{self._account_name}.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/{sku_id}"
+            response = self._session.get(
+                url,
+                headers=self._headers,
+                timeout=TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as exc:
+            logger.warning("Failed to fetch extra details for SKU %s: %s", sku_id, exc)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Unexpected error fetching extra details for SKU %s: %s", sku_id, exc)
+        return {}
