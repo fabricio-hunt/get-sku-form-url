@@ -122,6 +122,9 @@ def _fetch_single(service: VTEXService, url: str) -> dict:
             "slug": "N/A",
             "product_name": "N/A",
             "sku": "N/A",
+            "ean": "N/A",
+            "ref_id": "N/A",
+            "brand_name": "N/A",
             "status": f"Error: {exc}",
         }
 
@@ -179,6 +182,9 @@ def _render_results(df: pd.DataFrame) -> None:
             "slug":         st.column_config.TextColumn("Slug"),
             "product_name": st.column_config.TextColumn("Product Name"),
             "sku":          st.column_config.TextColumn("SKU ID"),
+            "ean":          st.column_config.TextColumn("EAN"),
+            "ref_id":       st.column_config.TextColumn("Ref ID"),
+            "brand_name":   st.column_config.TextColumn("Brand Name"),
             "status":       st.column_config.TextColumn("Status"),
         },
     )

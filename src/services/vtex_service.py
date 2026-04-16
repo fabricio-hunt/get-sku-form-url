@@ -22,6 +22,9 @@ class SkuResult:
     slug: str = NOT_AVAILABLE
     product_name: str = NOT_AVAILABLE
     sku: str = NOT_AVAILABLE
+    ean: str = NOT_AVAILABLE
+    ref_id: str = NOT_AVAILABLE
+    brand_name: str = NOT_AVAILABLE
     status: str = "Pending"
 
 
@@ -149,14 +152,21 @@ class VTEXService:
         """Fetches complementary SKU information to enrich the dataset."""
         try:
             logger.info("Querying VTEX SKU details — sku: %s", sku_id)
-            url = f"https://{self._account_name}.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/{sku_id}"
+            url = f"https://{self._account_name}.vtexcommercestable.com.br/api/catalog_system/pvt/sku/stockkeepingunitbyid/{sku_id}"
             response = self._session.get(
                 url,
                 headers=self._headers,
                 timeout=TIMEOUT_SECONDS,
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            
+            alternate_ids = data.get("AlternateIds", {})
+            return {
+                "ean": alternate_ids.get("Ean", NOT_AVAILABLE) or NOT_AVAILABLE,
+                "ref_id": alternate_ids.get("RefId", NOT_AVAILABLE) or NOT_AVAILABLE,
+                "brand_name": data.get("BrandName", NOT_AVAILABLE) or NOT_AVAILABLE,
+            }
         except requests.exceptions.RequestException as exc:
             logger.warning("Failed to fetch extra details for SKU %s: %s", sku_id, exc)
         except Exception as exc:  # noqa: BLE001
