@@ -99,10 +99,10 @@ class VTEXService:
         """Queries the VTEX API and populates *result* with product data."""
         try:
             logger.info("Querying VTEX — slug: %s", result.slug)
+            url = f"{self._base_url}/{result.slug}/p"
             response = self._session.get(
-                self._base_url,
+                url,
                 headers=self._headers,
-                params={"fq": f"productLink:{result.slug}"},
                 timeout=TIMEOUT_SECONDS,
             )
             response.raise_for_status()
