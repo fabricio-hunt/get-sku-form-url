@@ -249,10 +249,11 @@ def main() -> None:
     with col_actions:
         st.markdown("### Actions")
         process_btn = st.button("🚀 Process URLs", type="primary")
-        if st.button("🗑️ Clear"):
-            # Explicitly wipe the widget state before triggering rerun
+        
+        def clear_urls() -> None:
             st.session_state["url_input"] = ""
-            st.rerun()
+            
+        st.button("🗑️ Clear", on_click=clear_urls)
 
     # --- Processing ---
     if process_btn:
